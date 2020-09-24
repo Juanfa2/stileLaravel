@@ -22,15 +22,16 @@
 		<div class="p-4">
 			<div class="container p-5">
 				<div class="row">
-					<div class="alert alert-danger col-md-6" id="alertMessage" role="alert" v-if="errorMessage">
-						 errorMessage 
-					</div>
+						<div class="alert alert-danger alert-dismissible fade show col-md-6" id="alertMessage" role="alert" v-if="errorMessage">
+							Error de carga
+						</div>
 
-					<div class="alert alert-success col-md-6" id="alertMessage" role="alert" v-if="successMessage">
-						 successMessage 
-					</div>
+						<div class="alert alert-success alert-dismissible fade show col-md-6" id="alertMessage" role="alert" v-if="successMessage">
+							Operacion Exitosa
+						</div>
+
 					<div>
-						<a href="/new"class="btn btn-secondary" @click="showingaddModal = true">Agregar Producto</a>
+						<a href="#productModal" role="button" class="btn btn-large btn-primary" data-toggle="modal">Agregar producto</a>
 					</div>
 					<table class="table table-striped">
 						<thead class="thead-dark">
@@ -46,20 +47,32 @@
 						</thead>
 						<tbody class="tbody-custom">
 							@forelse($productos as $producto)
-							<tr v-for="">
-								<td> {{$producto->id }} </td>
-								<td><img :src="" alt="" height="60"></td>
-								<td>{{$producto->nombre}}</td>
-								<td>{{$producto->precioUnitario}}</td>
-								<td>{{$producto->descripcion}}</td>
-								<td><button @click="showingeditModal = true; selectProducto(producto);" class="btn btn-warning">Edit</button></td>
-								<td><button @click="showingdeleteModal = true; selectProducto(producto);" class="btn btn-danger">Delete</button></td>
-							</tr>
+								@if($producto->visible == 1)
+								<tr v-for="">
+									<td> {{$producto->id }} </td>
+									<td><img :src="" alt="" height="60"></td>
+									<td>{{$producto->nombre}}</td>
+									<td>{{$producto->precioUnitario}}</td>
+									<td>{{$producto->descripcion}}</td>
+									<td>
+										<button  class="btn btn-warning"  data-toggle="modal" data-target="#edit" data-name="{{$producto->nombre}}" data-descripcion="{{$producto->descripcion}}" data-precio="{{$producto->precioUnitario}}" data-prodid="{{$producto->id}}"> Edit</button>
+									</td>
+									<td><button  class="btn btn-danger" data-nombre="{{$producto->nombre}}" data-prodid="{{$producto->id}}" data-toggle="modal" data-target="#delete">Eliminar</button></td>
+
+								</tr>
+								@endif
 							@empty
-								<p>No hay productos</p>
+							<p>No hay productos</p>
+
 							@endforelse
 						</tbody>
 					</table>
+
+					
+
+
+
+
 				</div>
 			</div>
 			<section id="sect-categorias">
@@ -71,14 +84,14 @@
 				<div class="container p-5">
 					<div class="row">
 						<div class="alert alert-danger col-md-6" id="alertMessage" role="alert" v-if="errorMessage">
-							 errorMessage 
+							errorMessage 
 						</div>
 
 						<div class="alert alert-success col-md-6" id="alertMessage" role="alert" v-if="successMessage">
-							 successMessage 
+							successMessage 
 						</div>
 						<div>
-							<p class="btn btn-secondary" @click="showingaddModal = true">Agregar Categorias</p>
+							<a href="#categoryModal" role="button" class="btn btn-large btn-primary" data-toggle="modal">Agregar categoria</a>
 						</div>
 						<table class="table table-striped">
 							<thead class="thead-dark">
@@ -91,43 +104,33 @@
 							</thead>
 							<tbody class="tbody-custom">
 								@forelse($categorias as $cat)
+								
 								<tr v-for="cat in categorias">
 									<td>{{$cat->id}}</td>
 									<td>{{$cat->nombre}}</td>
-									<td><button @click="showingeditModal = true; selectProducto(producto);" class="btn btn-warning">Edit</button></td>
-									<td><button @click="showingdeleteModal = true; selectProducto(producto);" class="btn btn-danger">Delete</button></td>
+
+									<td><button class="btn btn-warning" data-toggle="modal" data-target="#editCat" data-name="{{$cat->nombre}}" data-catid="{{$cat->id}}">Edit</button></td>
+									@if($cat->visible == 1)
+									<td><button  class="btn btn-danger" data-nombre="{{$cat->nombre}}" data-catid="{{$cat->id}}" data-toggle="modal" data-target="#deleteCat">Delete</button></td>
+									@endif
 								</tr>
+								
 								@empty
-									<p>No hay categorias</p>
+								<p>No hay categorias</p>
 								@endforelse	
 							</tbody>
 						</table>
+
+						<!--AGREGAR CATEGORIA-->
+							@include('newCategory')
+							@include('editCategory')
+							@include('deleteCategory')
+						<!---->	
+
 					</div>
 				</div>
 
-				<!-- add modal -->
-				<div class="modal col-md-6" id="addmodal" v-if="showingaddModal">
-						<div class="modal-head">
-							<p class="p-left p-2">Agregar Categoria</p>
-							<hr/>
-
-							<div class="modal-body">
-								<div class="col-md-12">
-									<label for="nombre">Categoria</label>
-									<input type="text" id="nombre" class="form-control" v-model="newProd.nombre">
-
-									<label for="precio">id</label>
-									<input type="text" id="id" class="form-control" v-model="newProd.precio">
-								</div>
-
-								<hr/>
-								<button type="button" class="btn btn-success"  @click="showingaddModal = false; addProducto();">Guardar cambios</button>
-								<button type="button" class="btn btn-danger"   @click="showingaddModal = false;">Cerrar</button>
-							</div>
-						</div>
-				</div>
-
-
+				
 				<!-- edit modal -->
 				<div class="modal col-md-6" id="editmodal" v-if="showingeditModal">
 					<div class="modal-head">
@@ -144,8 +147,8 @@
 							</div>
 
 							<hr/>
-							<button type="button" class="btn btn-success"  @click="showingeditModal = false; updateProducto();">Guardar cambios</button>
-							<button type="button" class="btn btn-danger"   @click="showingeditModal = false;">Cerrar</button>
+							<button type="button" class="btn btn-success" >Guardar cambios</button>
+							<button type="button" class="btn btn-danger"  >Cerrar</button>
 						</div>
 					</div>
 				</div>
@@ -162,15 +165,32 @@
 								<h3>clickedProd.nombre</h3>
 							</center>
 							<hr/>
-							<button type="button" class="btn btn-danger"  @click="showingdeleteModal = false; deleteProducto();">Sí</button>
-							<button type="button" class="btn btn-warning"   @click="showingdeleteModal = false;">No</button>
+							<button type="button" class="btn btn-danger" >Sí</button>
+							<button type="button" class="btn btn-warning" >No</button>
 						</div>
 					</div>
 				</div>
-					
+
 			</section>
 		</div>
 	</div>
+<!--
+https://www.youtube.com/watch?v=DAitIOhxOOA
+-->
+
+<!-- VENTANA EMERGENTE, CREAR PRODUCTO -->
+
+@include('newProduct')
+
+<!-- ElIMINAR PRODUCTO-->
+
+@include('deleteProduct')		
+
+@include('editProduct')			
+					
+<!-- FIN VENTANA EMERGENTE -->
+
+
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
@@ -181,5 +201,57 @@
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+	<script>
+		$('#edit').on('show.bs.modal', function(event){
+			var button = $(event.relatedTarget)
+			var cat_id = button.data('prodid')
+			var name = button.data('name')
+			var descripcion = button.data('descripcion')
+			var precio = button.data('precio')
+			var modal = $(this)
+
+			modal.find('.modal-body #name').val(name)
+			modal.find('.modal-body #descripcion').val(descripcion)
+			modal.find('.modal-body #precio').val(precio)
+			modal.find('.form-signin #prod_id').val(cat_id)
+		})
+	</script>
+		
+	<script >
+		$('#delete').on('show.bs.modal', function(event){
+			var button = $(event.relatedTarget)
+			var cat_id = button.data('prodid')
+			var nombre = button.data('nombre')
+			var modal = $(this)
+
+			modal.find('.modal-body #prod_id').val(cat_id)
+			modal.find('.modal-body #nombre_id').text(nombre)
+		})
+	</script>
+
+	<script>
+		$('#editCat').on('show.bs.modal', function(event){
+			var button = $(event.relatedTarget)
+			var cat_id = button.data('catid')
+			var name = button.data('name')
+
+			var modal = $(this)
+
+			modal.find('.modal-body #name').val(name)
+			modal.find('.form-signin #cat_id').val(cat_id)
+		})
+	</script>
+	<script >
+		$('#deleteCat').on('show.bs.modal', function(event){
+			var button = $(event.relatedTarget)
+			var cat_id = button.data('catid')
+			var nombre = button.data('nombre')
+			var modal = $(this)
+
+			modal.find('.modal-body #cat_id').val(cat_id)
+			modal.find('.modal-body #nombre_id').text(nombre)
+		})
+	</script>
 </body>
 </html>

@@ -13,7 +13,7 @@
 		<div v-if="showAdmin">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<img src="" alt="">
-			<a href="{{ url('/') }}"><h1 class="text-light">Style</h1></a>
+			<a href="{{ route('home') }}"><h1 class="text-light">Style</h1></a>
 			@if (Route::has('login'))
 				<ul class="navbar-nav ml-auto">
 					

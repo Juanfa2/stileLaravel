@@ -19,7 +19,7 @@
 					
 						@auth
 						<li class="nav-item active">
-							<a href="{{ url('/home') }}">Home</a>
+							<a href="{{ route('home') }}">Home</a>
 						</li>
 						@else
 						<li class="nav-item active">
@@ -61,7 +61,7 @@
 			</div>
 			@forelse($categorias as $category)
 			<div class="col-md-2">
-				
+				@if($category->visible == 1)
 				<div id="root" class="p-4">
 					<div class="row">
 						<div v-for="cat in categorias" class="card text-center ml-2">
@@ -79,6 +79,7 @@
 						</div>
 					</div>
 				</div>
+				@endif
 				
 			</div>
 			@empty
