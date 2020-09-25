@@ -21,11 +21,10 @@
 			</div>
 		</div>
 		@forelse($categorias as $category)
-		<div class="col-md-2">
-			@if($category->visible == 1)
-			<div id="root" class="p-4">
-				<div class="row">
-					<div v-for="cat in categorias" class="card text-center ml-2">
+			<div class="col-md-2">
+				{{-- @if($category->visible == 1) --}}
+				<div id="root" class="p-4">
+					<div class="row">
 						<div class="card-title">
 							<p class="">{{ $category->nombre }}</p>
 						</div>
@@ -39,12 +38,11 @@
 						</div>
 					</div>
 				</div>
+				{{-- @endif --}}
+				
 			</div>
-			@endif
-			
-		</div>
-		@empty
-		<p>No hay categorias</p>
+			@empty
+			<p>No hay categorias</p>
 		@endforelse	
 	</div>
 	
